@@ -35,7 +35,17 @@ module.exports = {
 			/* little bone */
 			{x:-5,y:-5},{x:-4,y:-5},
 			{x:-5,y:-6},{x:-4,y:-6}
-		]
+		];
+		
+		this.hideMeat = function(meat) {
+			meat.forEach(function(meatPiece) {
+				meatPiece.state = "hidden";
+			});
+			return meat;
+		}
+			
+		this.revealed = this.hideMeat(this.meat);
+		
 	},
 	
 	//*************** PLAYER ******************

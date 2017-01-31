@@ -58,7 +58,7 @@ socket.on('connection', function(client){
 	nextPlayerId++;
 	
 	var clientInfo = {
-		steak: steak
+		steak: steak.revealed
 	};
 	
 	socket.emit("initClient",clientInfo);

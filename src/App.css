@@ -19,9 +19,6 @@
 	height: 16px;
 }
 
-.meat:hover {
-	position: absolute;
+.meat.hovered {
 	background-color: darkred;
-	width: 16px;
-	height: 16px;
 }
