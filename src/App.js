@@ -8,36 +8,44 @@ class Steak extends React.Component {
   constructor(props) {
     super();
 		this.state = {
-			meat: [
-				{x:0,y:0},
-				{x:-1,y:0},
-				{x:0,y:-1},
-				{x:-1,y:-1}
-			]
+			meat: props
 		};
   }
 	
   render() {
-		var boutdesteak = []
+		console.log(this.props);
+		var meat = []
 		
-		for(let i=0; i<this.state.meat.length; i++){
-			boutdesteak.push(<div className="meat" style={{top: 160+this.state.meat[i].y*16, left: 160+this.state.meat[i].x*16 }}></div>);
+		for(let i=0; i<this.props.meat.length; i++){
+			meat.push(<div className="meat" style={{top: 160+this.props.meat[i].y*16, left: 160+this.props.meat[i].x*16 }}></div>);
 		}
 
 		return (
 				<div className="steak">
-					{boutdesteak}
+					{meat}
     		</div>
 			);
   }
 }
 
 class App extends Component {
+	constructor() {
+		super();
+		this.state = {
+			meat: []
+		}
+	}
   render() {
     return (
-      <Steak />
+      <Steak meat={this.state.meat}/>
     );
   }
+	
+	componentDidMount() {
+		socket.on("initClient", (data)=> {
+			this.setState({meat: data.steak.meat})
+		});
+	}
 }
 
 export default App;
