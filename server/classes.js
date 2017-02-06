@@ -27,24 +27,25 @@ module.exports = {
 		];
 		this.bone = [
 			/* big bone */
-			{x:2,y:5},
-			{x:1,y:4},{x:2,y:4},{x:3,y:4},
-			{x:0,y:3},{x:1,y:3},{x:2,y:3},{x:3,y:3},{x:4,y:3},
-			{x:1,y:2},{x:2,y:2},{x:3,y:2},
-			{x:2,y:1},
+			{x:2,y:-5},
+			{x:1,y:-4},{x:2,y:-4},{x:3,y:-4},
+			{x:0,y:-3},{x:1,y:-3},{x:2,y:-3},{x:3,y:-3},{x:4,y:-3},
+			{x:1,y:-2},{x:2,y:-2},{x:3,y:-2},
+			{x:2,y:-1},
 			/* little bone */
-			{x:-5,y:-5},{x:-4,y:-5},
-			{x:-5,y:-6},{x:-4,y:-6}
+			{x:-5,y:5},{x:-4,y:5},
+			{x:-5,y:6},{x:-4,y:6}
 		];
 		
-		this.hideMeat = function(meat) {
+		this.resetMeat = function(meat) {
 			meat.forEach(function(meatPiece) {
 				meatPiece.state = "hidden";
+				meatPiece.belongsTo = "none";
 			});
 			return meat;
 		}
 			
-		this.revealed = this.hideMeat(this.meat);
+		this.revealed = this.resetMeat(this.meat);
 		
 	},
 	

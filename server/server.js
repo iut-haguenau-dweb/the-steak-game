@@ -16,18 +16,16 @@ var socket = new io(server);
 
 /********************* INITIALISATION STEAK-GAME ************************/
 
-var pixelSize = 16;
-var containerWidth = 20;
-var containerHeight = 20;
+/* CONST */
+var STAMPRADIUS = 2;
+
+/* Players related vars */
 var totalPlayer = 0;
 var nextPlayerId = 1;
-
-var timer = 0; //timer nécessaire à l'animation, pas toucher !!!
-var isPaused = true;
-
-var container;
-var steak;
 var players = []; //players [0] = joueur 1, etc...
+var nextMoveFor = -1;
+
+var steak;
 
 var classes = require('./classes');
 
@@ -62,6 +60,28 @@ socket.on('connection', function(client){
 	};
 	
 	socket.emit("initClient",clientInfo);
+	
+	client.on('stampOn', function(data){
+		var stampedMeat = steak.meat.filter((meatPiece) => {
+			return (Math.abs(steak.meat[data.meatIndex].x - meatPiece.x) + Math.abs(steak.meat[data.meatIndex].y - meatPiece.y) <= STAMPRADIUS);
+		});
+		stampedMeat.forEach(function(stampedPiece) {
+			var stillHidden = true;
+			for(var i=0; i<steak.bone.length; i++) {
+				if((stampedPiece.x === steak.bone[i].x) && (stampedPiece.y === steak.bone[i].y)) {
+					stampedPiece.state = "bone";
+					stillHidden = false;
+				}
+			}
+			if (stillHidden) {
+				stampedPiece.state = "meat";
+			}
+		});
+		console.log(stampedMeat);
+		var response = {};
+		response.updatedMeat = stampedMeat
+		socket.emit('updateGame',response);
+	});
 	
 	client.on('disconnect', function(data){
 		players.forEach(function(player) {

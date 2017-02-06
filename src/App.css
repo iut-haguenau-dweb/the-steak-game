@@ -12,6 +12,17 @@
 	margin: 0 auto;
 }
 
+.hidden {
+	position: absolute;
+	background-color: grey;
+	width: 16px;
+	height: 16px;
+}
+
+.hidden.hovered {
+	background-color: dimgrey;
+}
+
 .meat {
 	position: absolute;
 	background-color: red;
@@ -21,4 +32,15 @@
 
 .meat.hovered {
 	background-color: darkred;
+}
+
+.bone {
+	position: absolute;
+	background-color: #EEE;
+	width: 16px;
+	height: 16px;
+}
+
+.bone.hovered {
+	background-color: #CCC;
 }

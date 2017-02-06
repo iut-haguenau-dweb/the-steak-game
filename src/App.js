@@ -19,28 +19,28 @@ class Steak extends React.Component {
 		});
 	}
 	
-	stampHover = (event,i) => {
+	stampHover = (i) => {
 		let radius = 2;
-		
 		this.setState({hovered: this.getHoveredPieces(i,radius)});
 	}
 	
-	stampClick = (event,i) => {
-		console.log(event.target);
+	stampClick = (i) => {
+		socket.emit("stampOn", {
+			meatIndex: i
+		});
 	}
 	
   render() {
 		var meat = [];
 		
 		for(let i=0; i<this.props.meat.length; i++){
-			let styleClasses = "meat";
-			//console.log(this.state.hovered);
+			let styleClasses = this.props.meat[i].state;
 			for (let j=0; j<this.state.hovered.length; j++) {
-				if (this.props.meat[i] == this.state.hovered[j]) {
+				if (this.props.meat[i] === this.state.hovered[j]) {
 					styleClasses += " hovered";
 				}
 			}
-			meat.push(<div className={styleClasses} onClick={this.stampClick} onMouseOver={(e)=>this.stampHover(e, i)} style={{top: 160+this.props.meat[i].y*16, left: 160+this.props.meat[i].x*16 }}></div>);
+			meat.push(<div className={styleClasses} onClick={()=>this.stampClick(i)} onMouseOver={()=>this.stampHover(i)} style={{top: 160+this.props.meat[i].y*16, left: 160+this.props.meat[i].x*16 }}></div>);
 		}
 
 		return (
@@ -84,6 +84,20 @@ class App extends Component {
 	componentDidMount() {
 		socket.on("initClient", (data)=> {
 			this.setState({meat: data.steak});
+		});
+		
+		socket.on("updateGame", (data)=> {
+			console.log(this.state.meat);
+			for (let i = 0; i < this.state.meat.length; i++) {
+				for(let j = 0; j<data.updatedMeat.length; j++) {
+					if((this.state.meat[i].x === data.updatedMeat[j].x) && (this.state.meat[i].y === data.updatedMeat[j].y)){
+						let newState = data.updatedMeat[j].state;
+						console.log(data.updatedMeat[j].state);
+						this.state.meat[i].state = newState;
+						console.log(this.state.meat[i].state);
+					}
+				}
+			}
 		});
 	}
 }
