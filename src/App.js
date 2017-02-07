@@ -70,8 +70,7 @@ class App extends Component {
 	constructor() {
 		super();
 		this.state = {
-			meat: [],
-			bone: []
+			meat: []
 		}
 	}
 	
@@ -87,17 +86,16 @@ class App extends Component {
 		});
 		
 		socket.on("updateGame", (data)=> {
-			console.log(this.state.meat);
-			for (let i = 0; i < this.state.meat.length; i++) {
+			let wholeNewState = this.state.meat;
+			for (let i = 0; i < wholeNewState.length; i++) {
 				for(let j = 0; j<data.updatedMeat.length; j++) {
-					if((this.state.meat[i].x === data.updatedMeat[j].x) && (this.state.meat[i].y === data.updatedMeat[j].y)){
+					if((wholeNewState[i].x === data.updatedMeat[j].x) && (wholeNewState[i].y === data.updatedMeat[j].y)){
 						let newState = data.updatedMeat[j].state;
-						console.log(data.updatedMeat[j].state);
-						this.state.meat[i].state = newState;
-						console.log(this.state.meat[i].state);
+						wholeNewState[i].state = newState;
 					}
 				}
 			}
+			this.setState({meat: wholeNewState});
 		});
 	}
 }
