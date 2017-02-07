@@ -22,8 +22,8 @@ var STAMPRADIUS = 2;
 /* Players related vars */
 var totalPlayer = 0;
 var nextPlayerId = 1;
-var players = []; //players [0] = joueur 1, etc...
-var nextMoveFor = -1;
+var players = []; //Player 1 and 2 are players[0] and [1]. Others are considered in queue
+var nextMoveFor = -1; //-1 = pause, 0 = player 1, 1 = player 2;
 
 var steak;
 
@@ -33,7 +33,7 @@ console.log("Game initialised");
 
 /***************** REAL TIME STUFF ***************************/
 
-
+//Not actually used
 timer = setInterval(
 function() {
 	
@@ -59,28 +59,53 @@ socket.on('connection', function(client){
 		steak: steak.revealed
 	};
 	
+	/*** If a second player connects, start the game ***/
+	if((nextMoveFor === -1) && (totalPlayer >= 2)) {
+		nextMoveFor = 0;
+	}
 	socket.emit("initClient",clientInfo);
 	
 	client.on('stampOn', function(data){
-		var stampedMeat = steak.meat.filter((meatPiece) => {
-			return (Math.abs(steak.meat[data.meatIndex].x - meatPiece.x) + Math.abs(steak.meat[data.meatIndex].y - meatPiece.y) <= STAMPRADIUS);
-		});
-		stampedMeat.forEach(function(stampedPiece) {
-			var stillHidden = true;
-			for(var i=0; i<steak.bone.length; i++) {
-				if((stampedPiece.x === steak.bone[i].x) && (stampedPiece.y === steak.bone[i].y)) {
-					stampedPiece.state = "bone";
-					stillHidden = false;
+		
+		/*** Check if there is 2 players connected ***/
+		if(nextMoveFor === -1){
+			socket.emit('printErrorMessage',"There isn't enough players to start the game");
+		}
+		
+		/*** If so, check if it's the turn of the player who clicked ***/
+		else if(client.id === players[nextMoveFor].clientId) {
+			var stampedMeat = steak.meat.filter((meatPiece) => {
+				return (Math.abs(steak.meat[data.meatIndex].x - meatPiece.x) + Math.abs(steak.meat[data.meatIndex].y - meatPiece.y) <= STAMPRADIUS);
+			});
+			stampedMeat.forEach(function(stampedPiece) {
+				var stillHidden = true;
+				for(var i=0; i<steak.bone.length; i++) {
+					if((stampedPiece.x === steak.bone[i].x) && (stampedPiece.y === steak.bone[i].y)) {
+						stampedPiece.state = "bone";
+						stillHidden = false;
+					}
 				}
+				if (stillHidden) {
+					stampedPiece.state = "meat";
+				}
+			});
+			
+			if(nextMoveFor === 0) {
+				nextMoveFor = 1;
 			}
-			if (stillHidden) {
-				stampedPiece.state = "meat";
+			else if(nextMoveFor === 1) {
+				nextMoveFor = 0;
 			}
-		});
-		console.log(stampedMeat);
-		var response = {};
-		response.updatedMeat = stampedMeat
-		socket.emit('updateGame',response);
+			
+			var response = {};
+			response.updatedMeat = stampedMeat
+			socket.emit('updateGame',response);
+		}
+		
+		/*** Else, it's not the current player turn ***/
+		else{
+			socket.emit('printErrorMessage',"It is not your turn");
+		}
 	});
 	
 	client.on('disconnect', function(data){
@@ -91,6 +116,10 @@ socket.on('connection', function(client){
 			}
 		});
 		totalPlayer--;
+		/*** If there is less than 2 players, pause the game ***/
+		if(totalPlayer < 2) {
+			nextMoveFor = -1;
+		}
 	});
 	
 });
