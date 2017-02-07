@@ -109,12 +109,25 @@ socket.on('connection', function(client){
 	});
 	
 	client.on('disconnect', function(data){
-		players.forEach(function(player) {
-			if(player.clientId === client.id) {
-				console.log(player.username+" disconnected");
-				delete player;
+		for(var i = 0; i<players.length; i++) {
+			console.log("boop "+i);
+			console.log(players[i]);
+			if(players[i].clientId === client.id) {
+				console.log(players[i].username+" disconnected");
+				
+				//Shifting the players array
+				delete players[i];
+				for(var j = i; j<players.length; j++) {
+					if (players[j+1] != undefined) {
+						players[j] = players[j+1];
+					}
+					else {
+						players.pop();
+					}
+				}
+				console.log(players);
 			}
-		});
+		}
 		totalPlayer--;
 		/*** If there is less than 2 players, pause the game ***/
 		if(totalPlayer < 2) {
