@@ -1,8 +1,10 @@
 module.exports = {
-	
+
 	//**************** STEAK ******************
-	
+
 	Steak: function () {
+		// NOTATION: Ca aurait été plus lisible en stockant meat et bone dans des autres fichiers, comme
+		// cela on sépare mieux données et code
 		this.meat = [
 			{x:0,y:-10},{x:1,y:-10},{x:2,y:-10},
 			{x:-2,y:-9},{x:-1,y:-9},{x:0,y:-9},{x:1,y:-9},{x:2,y:-9},{x:3,y:-9},{x:4,y:-9},{x:5,y:-9},
@@ -36,7 +38,7 @@ module.exports = {
 			{x:-5,y:5},{x:-4,y:5},
 			{x:-5,y:6},{x:-4,y:6}
 		];
-		
+
 		this.resetMeat = function(meat) {
 			meat.forEach(function(meatPiece) {
 				meatPiece.state = "hidden";
@@ -44,20 +46,20 @@ module.exports = {
 			});
 			return meat;
 		}
-			
+
 		this.revealed = this.resetMeat(this.meat);
-		
+
 	},
-	
+
 	//*************** PLAYER ******************
 
 	Player: function(id,username,clientId) {
-		
+
 		this.id = id;
 		this.username = username;
 		this.clientId = clientId;
 		this.score = 0;
-		
+
 	}
 };
 
@@ -65,7 +67,7 @@ module.exports = {
 
 
 
-	
+
 
 
 

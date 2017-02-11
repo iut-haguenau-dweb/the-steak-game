@@ -34,9 +34,10 @@ console.log("Game initialised");
 /***************** REAL TIME STUFF ***************************/
 
 //Not actually used
+// NOTATION: A supprimer
 timer = setInterval(
 function() {
-	
+
 }, 10);
 
 
@@ -44,34 +45,35 @@ function() {
 
 
 socket.on('connection', function(client){
-	
+
 	if(totalPlayer <= 0) {
 		steak = resetSteak();
 	}
-	
+
 	var username = "Guest #"+nextPlayerId;
 	players.push(new classes.Player(nextPlayerId,username,client.id));
 	console.log(username+" connected");
 	totalPlayer++;
 	nextPlayerId++;
-	
+
 	var clientInfo = {
 		steak: steak.revealed
 	};
-	
+
 	/*** If a second player connects, start the game ***/
 	if((nextMoveFor === -1) && (totalPlayer >= 2)) {
 		nextMoveFor = 0;
 	}
 	socket.emit("initClient",clientInfo);
-	
+
 	client.on('stampOn', function(data){
-		
+
 		/*** Check if there is 2 players connected ***/
 		if(nextMoveFor === -1){
+			// NOTATION: Rajouter des return permet d'avoir moins de else if imbriqués
 			socket.emit('printErrorMessage',"There isn't enough players to start the game");
 		}
-		
+
 		/*** If so, check if it's the turn of the player who clicked ***/
 		else if(client.id === players[nextMoveFor].clientId) {
 			var stampedMeat = steak.meat.filter((meatPiece) => {
@@ -89,33 +91,38 @@ socket.on('connection', function(client){
 					stampedPiece.state = "meat";
 				}
 			});
-			
+
+			// NOTATION: Simplifiable avec un ternaire
+			// Ou même nextMoveFor = 1 - nextMoveFor (mais je préfère le ternaire pour que ce soit plus simple à comprendre)
 			if(nextMoveFor === 0) {
 				nextMoveFor = 1;
 			}
 			else if(nextMoveFor === 1) {
 				nextMoveFor = 0;
 			}
-			
+
 			var response = {};
 			response.updatedMeat = stampedMeat
 			socket.emit('updateGame',response);
 		}
-		
+
 		/*** Else, it's not the current player turn ***/
 		else{
 			socket.emit('printErrorMessage',"It is not your turn");
 		}
 	});
-	
+
 	client.on('disconnect', function(data){
 		for(var i = 0; i<players.length; i++) {
+			// NOTATION: Enlève les console.log inutiles quand tu as fini
 			console.log("boop "+i);
 			console.log(players[i]);
 			if(players[i].clientId === client.id) {
 				console.log(players[i].username+" disconnected");
-				
+
 				//Shifting the players array
+				// NOTATION: C'est un peu bizarre. En utilisant un tableau, et par exemple
+				// filter, tu devrais ne pas avoir a faire ce genre de choses.
 				delete players[i];
 				for(var j = i; j<players.length; j++) {
 					if (players[j+1] != undefined) {
@@ -134,13 +141,14 @@ socket.on('connection', function(client){
 			nextMoveFor = -1;
 		}
 	});
-	
+
 });
 
 
 /*********************** FUNCTIONS ****************************/
 
 function resetSteak() {
+// NOTATION: Simplifiable
 	var response = new classes.Steak();
 	return response;
 }

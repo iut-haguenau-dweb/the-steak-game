@@ -2,37 +2,41 @@ import React, { Component } from 'react';
 import io from 'socket.io-client'
 import './App.css';
 
+// NOTATION: On ne voit nul part le score du joueur. C'est dommage
 let socket = io(`http://localhost:2479`);
 
 class Steak extends React.Component {
+// NOTATION: Attention aux spaces/tabs .....
   constructor(props) {
     super();
+// NOTATION: C'est assez bizarre d'avoir un state qui vient directement des props.
+// En fait on dirait que le state.meat n'est jamais utilisé
 		this.state = {
 			meat: props,
 			hovered: []
 		};
   }
-	
+
 	getHoveredPieces = (i,radius) => {
 		return this.props.meat.filter((meatPiece) => {
 			return (Math.abs(this.props.meat[i].x - meatPiece.x) + Math.abs(this.props.meat[i].y - meatPiece.y) <= radius);
 		});
 	}
-	
+
 	stampHover = (i) => {
 		let radius = 2;
 		this.setState({hovered: this.getHoveredPieces(i,radius)});
 	}
-	
+
 	stampClick = (i) => {
 		socket.emit("stampOn", {
 			meatIndex: i
 		});
 	}
-	
+
   render() {
 		var meat = [];
-		
+
 		for(let i=0; i<this.props.meat.length; i++){
 			let styleClasses = this.props.meat[i].state;
 			for (let j=0; j<this.state.hovered.length; j++) {
@@ -50,7 +54,9 @@ class Steak extends React.Component {
 			);
   }
 }
-	
+
+// NOTATION: Code mort, a supprimer ...
+
 /*class Panel extends React.Component {
   constructor(props) {
     super();
@@ -60,7 +66,7 @@ class Steak extends React.Component {
 			queue: props.queue
 		};
 	}
-	
+
   render() {
 		console.log(this.props);
   }
@@ -73,18 +79,19 @@ class App extends Component {
 			meat: []
 		}
 	}
-	
+
   render() {
     return (
       <Steak meat={this.state.meat}/>
     );
   }
-	
+
 	componentDidMount() {
+// NOTATION: Le jeu est assez light coté UI.
 		socket.on("initClient", (data)=> {
 			this.setState({meat: data.steak});
 		});
-		
+
 		socket.on("updateGame", (data)=> {
 			let wholeNewState = this.state.meat;
 			for (let i = 0; i < wholeNewState.length; i++) {
